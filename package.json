@@ -1,0 +1,54 @@
+{
+   "name": "react-native-better-components",
+   "version": "1.0.0",
+   "description": "A component library for react native that is as close to plane react-native components as possible",
+   "main": "dist/index.js",
+   "triggerDeployment": 3,
+   "files": [
+      "dist"
+   ],
+   "exports": {
+      ".": {
+         "types": "./dist/index.d.ts",
+         "default": "./dist/index.js"
+      }
+   },
+   "repository": {
+      "type": "git",
+      "url": "git+https://github.com/krissvv/react-native-better-components.git"
+   },
+   "homepage": "https://krissvv.github.io/react-native-better-components",
+   "bugs": {
+      "url": "https://github.com/krissvv/react-native-better-components/issues"
+   },
+   "scripts": {
+      "clean": "rimraf dist",
+      "prebuild": "npm run clean",
+      "build": "tsup",
+      "predeploy": "npm run build",
+      "deploy": "npm publish"
+   },
+   "keywords": [
+      "components",
+      "react",
+      "react-native",
+      "better",
+      "easy"
+   ],
+   "author": "Kristiyan Valchev (krissvv)",
+   "license": "MIT",
+   "devDependencies": {
+      "@types/crypto-js": "^4.2.2",
+      "@types/react": "^19.0.10",
+      "rimraf": "^6.0.1",
+      "tsup": "^8.5.0",
+      "typescript": "^5.5.3"
+   },
+   "peerDependencies": {
+      "@react-native-async-storage/async-storage": "^2.2.0",
+      "crypto-js": "^4.2.0",
+      "react": "^19.0.0",
+      "react-better-core": "^1.0.8",
+      "react-native": "^0.82.0"
+   }
+}
