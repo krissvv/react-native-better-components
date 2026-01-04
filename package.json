@@ -1,6 +1,6 @@
 {
    "name": "react-native-better-html-components",
-   "version": "1.0.0",
+   "version": "1.0.1",
    "description": "A component library for react native that is as close to plane react-native as possible",
    "main": "dist/index.js",
    "files": [
@@ -38,7 +38,7 @@
    "license": "MIT",
    "devDependencies": {
       "@types/crypto-js": "^4.2.2",
-      "@types/react": "^19.0.10",
+      "@types/react": "^19.1.0",
       "rimraf": "^6.0.1",
       "tsup": "^8.5.0",
       "typescript": "^5.5.3"
@@ -46,8 +46,8 @@
    "peerDependencies": {
       "@react-native-async-storage/async-storage": "^2.2.0",
       "crypto-js": "^4.2.0",
-      "react": "^19.0.0",
+      "react": "^19.1.0",
       "react-better-core": "^1.0.8",
-      "react-native": "^0.82.0"
+      "react-native": "^0.81.5"
    }
 }
