@@ -1,6 +1,9 @@
 import { BetterCoreConfig } from "react-better-core";
 
-import { BetterComponentsInternalConfig, externalBetterCoreContextValue } from "../components/BetterComponentsProvider";
+import {
+   BetterComponentsInternalConfig,
+   externalBetterCoreContextValue,
+} from "../components/BetterComponentsProvider";
 
 export const checkBetterCoreContextValue = (
    value: BetterCoreConfig | undefined,
@@ -27,13 +30,13 @@ export const checkBetterComponentsContextValue = (
    return value !== undefined;
 };
 
-export const filterHover = (): Record<"z05" | "z1" | "z2" | "z3", React.CSSProperties["filter"]> => {
-   if (!checkBetterCoreContextValue(externalBetterCoreContextValue, "filterHover")) return undefined as any;
+export const pressStrength = (): Record<"z05" | "z1" | "z2" | "z3", number> => {
+   if (!checkBetterCoreContextValue(externalBetterCoreContextValue, "pressStrength")) return undefined as any;
 
    return {
-      z05: externalBetterCoreContextValue.colorTheme === "dark" ? "brightness(1.2)" : "brightness(0.95)",
-      z1: externalBetterCoreContextValue.colorTheme === "dark" ? "brightness(1.3)" : "brightness(0.9)",
-      z2: externalBetterCoreContextValue.colorTheme === "dark" ? "brightness(1.6)" : "brightness(0.8)",
-      z3: externalBetterCoreContextValue.colorTheme === "dark" ? "brightness(1.9)" : "brightness(0.7)",
+      z05: externalBetterCoreContextValue.colorTheme === "dark" ? 0.85 : 0.95,
+      z1: externalBetterCoreContextValue.colorTheme === "dark" ? 0.6 : 0.8,
+      z2: externalBetterCoreContextValue.colorTheme === "dark" ? 0.5 : 0.7,
+      z3: externalBetterCoreContextValue.colorTheme === "dark" ? 0.4 : 0.6,
    };
 };

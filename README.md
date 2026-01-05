@@ -1,15 +1,15 @@
-# react-native-better-components
+# react-native-better-html
 
 A component library for react native that is as close to plane react-native as possible
 
-![NPM Version](https://img.shields.io/npm/v/react-native-better-html-components)
-![GitHub Repo stars](https://img.shields.io/github/stars/krissvv/react-native-better-components?style=flat)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/krissvv/react-native-better-components)
-![NPM Type Definitions](https://img.shields.io/npm/types/react-native-better-html-components)<br/>
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/krissvv/react-native-better-components/document-deploy.yml)
-![GitHub last commit](https://img.shields.io/github/last-commit/krissvv/react-native-better-components)
-![NPM Downloads](https://img.shields.io/npm/dm/react-native-better-html-components)<br/>
-![NPM License](https://img.shields.io/npm/l/react-native-better-html-components)<br/>
+![NPM Version](https://img.shields.io/npm/v/react-native-better-html)
+![GitHub Repo stars](https://img.shields.io/github/stars/krissvv/react-native-better-html?style=flat)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/krissvv/react-native-better-html)
+![NPM Type Definitions](https://img.shields.io/npm/types/react-native-better-html)<br/>
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/krissvv/react-native-better-html/document-deploy.yml)
+![GitHub last commit](https://img.shields.io/github/last-commit/krissvv/react-native-better-html)
+![NPM Downloads](https://img.shields.io/npm/dm/react-native-better-html)<br/>
+![NPM License](https://img.shields.io/npm/l/react-native-better-html)<br/>
 ![React dep](https://img.shields.io/badge/React-v19-9b6499)
 
 # 🚧 Work in progress 🚧
@@ -18,7 +18,7 @@ A component library for react native that is as close to plane react-native as p
 
 ## Documentation
 
-You can find the full documentation on the home page of the official [Docs](https://krissvv.github.io/react-native-better-components) website.
+You can find the full documentation on the home page of the official [Docs](https://krissvv.github.io/react-native-better-html) website.
 
 ## Requirements
 
@@ -27,10 +27,10 @@ You can find the full documentation on the home page of the official [Docs](http
 
 ## Installation
 
-To install `react-native-better-components` run the following command in your project directory:
+To install `react-native-better-html` run the following command in your project directory:
 
 ```bash
-npm install react-native-better-components
+npm install react-native-better-html
 ```
 
 ## Configuration
@@ -39,7 +39,7 @@ The `<BetterComponentsProvider>` component should wrap your application's root c
 
 ```jsx
 import { Stack } from "expo-router";
-import { BetterComponentsProvider } from "react-native-better-components";
+import { BetterComponentsProvider } from "react-native-better-html";
 
 export default function RootLayout() {
    return (
@@ -54,4 +54,4 @@ This is enough for the components to work with the default configurations that t
 
 ## Problems?
 
-Ask for help on [Stack Overflow](https://stackoverflow.com/questions/ask), on our [GitHub repository](https://github.com/krissvv/react-native-better-components/issues/new) or contact the contributors.
+Ask for help on [Stack Overflow](https://stackoverflow.com/questions/ask), on our [GitHub repository](https://github.com/krissvv/react-native-better-html/issues/new) or contact the contributors.

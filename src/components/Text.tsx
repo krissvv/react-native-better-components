@@ -57,7 +57,9 @@ TextComponent.caption = function Caption(props) {
 TextComponent.unknown = function Unknown(props) {
    const theme = useTheme();
 
-   return <TextComponent fontStyle="italic" textAlign="center" color={theme.colors.textSecondary} {...props} />;
+   return (
+      <TextComponent fontStyle="italic" textAlign="center" color={theme.colors.textSecondary} {...props} />
+   );
 } as TextComponentType[`unknown`];
 
 const Text = memo(TextComponent) as any as typeof TextComponent & {

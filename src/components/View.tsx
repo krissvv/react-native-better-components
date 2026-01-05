@@ -57,8 +57,12 @@ export type ViewProps<Value = unknown> = {
    /** @default false */
    isRow?: boolean;
    value?: Value;
+   /** @default false */
+   disabled?: boolean;
    /** @default "highlight" */
    pressType?: "opacity" | "highlight";
+   /** @default 0.8 */
+   pressStrength?: number;
    onPress?: (event: GestureResponderEvent) => void;
    onPressIn?: (event: GestureResponderEvent) => void;
    onPressOut?: (event: GestureResponderEvent) => void;
@@ -80,7 +84,9 @@ type ViewComponentType = {
 const ViewComponent: ViewComponentType = function View<Value>({
    isRow,
    value,
+   disabled,
    pressType = "highlight",
+   pressStrength = 0.8,
    onPress,
    onPressIn,
    onPressOut,
@@ -140,25 +146,35 @@ const ViewComponent: ViewComponentType = function View<Value>({
    const touchableNativeFeedbackContentStyle = useMemo<ViewProps>(
       () => ({
          ...style,
-         ...touchableNativeFeedbackStyleMoveToHolder.reduce<NativeViewStyle>((previousValue, currentValue) => {
-            if (currentValue === "shadowOffsetWidth" || currentValue === "shadowOffsetHeight")
-               previousValue.shadowOffset = undefined;
-            else previousValue[currentValue] = undefined;
+         ...touchableNativeFeedbackStyleMoveToHolder.reduce<NativeViewStyle>(
+            (previousValue, currentValue) => {
+               if (currentValue === "shadowOffsetWidth" || currentValue === "shadowOffsetHeight")
+                  previousValue.shadowOffset = undefined;
+               else previousValue[currentValue] = undefined;
 
-            return previousValue;
-         }, {}),
+               return previousValue;
+            },
+            {},
+         ),
       }),
       [style],
    );
 
    const pressEvents = useMemo(
-      () => ({
-         onPress,
-         onPressIn,
-         onPressOut,
-         onLongPress,
-      }),
-      [onPress, onPressIn, onPressOut, onLongPress],
+      () =>
+         !disabled
+            ? {
+                 onPress: (event: GestureResponderEvent) => {
+                    onPress?.(event);
+
+                    if (value !== undefined) onPressWithValue?.(value);
+                 },
+                 onPressIn,
+                 onPressOut,
+                 onLongPress,
+              }
+            : {},
+      [disabled, onPress, onPressIn, onPressOut, onLongPress, onPressWithValue, value],
    );
 
    const androidBoxShadow =
@@ -170,14 +186,13 @@ const ViewComponent: ViewComponentType = function View<Value>({
             : undefined
          : undefined;
 
-   const isPressable = onPress || onPressIn || onPressOut || onLongPress;
-   const activeOpacity = 0.8;
+   const isPressable = onPress || onPressIn || onPressOut || onLongPress || onPressWithValue;
 
    return isPressable ? (
       pressType === "opacity" ? (
          <TouchableOpacity
             style={style}
-            activeOpacity={activeOpacity}
+            activeOpacity={pressStrength}
             boxShadow={androidBoxShadow}
             {...pressEvents}
             {...props}
@@ -187,14 +202,14 @@ const ViewComponent: ViewComponentType = function View<Value>({
       ) : pressType === "highlight" ? (
          Platform.OS === "ios" ? (
             <TouchableHighlight
-               activeOpacity={activeOpacity}
+               activeOpacity={pressStrength}
                underlayColor={theme.colors.textPrimary}
                style={touchableHighlightStyle}
                {...pressEvents}
                {...props}
             >
                <ViewComponent
-                  flex={1}
+                  width="100%"
                   borderRadius={props.borderRadius}
                   borderTopLeftRadius={props.borderTopLeftRadius}
                   borderTopRightRadius={props.borderTopRightRadius}
@@ -221,7 +236,7 @@ const ViewComponent: ViewComponentType = function View<Value>({
                   {...pressEvents}
                   {...props}
                   background={TouchableNativeFeedback.Ripple(
-                     `${theme.colors.textPrimary}${alphaToHex(1 - activeOpacity)}`,
+                     `${theme.colors.textPrimary}${alphaToHex(1 - pressStrength)}`,
                      false,
                   )}
                   useForeground

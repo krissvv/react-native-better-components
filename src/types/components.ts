@@ -13,7 +13,13 @@ export type ComponentStyle<Style extends ViewStyle = ViewStyle> = OmitProps<
 
 export type ComponentMarginProps = Pick<
    ComponentStyle,
-   "margin" | "marginTop" | "marginBottom" | "marginLeft" | "marginRight" | "marginVertical" | "marginHorizontal"
+   | "margin"
+   | "marginTop"
+   | "marginBottom"
+   | "marginLeft"
+   | "marginRight"
+   | "marginVertical"
+   | "marginHorizontal"
 >;
 export type ComponentExcludeMarginProps =
    | "marginBlock"
@@ -27,7 +33,13 @@ export type ComponentExcludeMarginProps =
 
 export type ComponentPaddingProps = Pick<
    ComponentStyle,
-   "padding" | "paddingTop" | "paddingBottom" | "paddingLeft" | "paddingRight" | "paddingVertical" | "paddingHorizontal"
+   | "padding"
+   | "paddingTop"
+   | "paddingBottom"
+   | "paddingLeft"
+   | "paddingRight"
+   | "paddingVertical"
+   | "paddingHorizontal"
 >;
 export type ComponentExcludePaddingProps =
    | "paddingBlock"
@@ -39,7 +51,9 @@ export type ComponentExcludePaddingProps =
    | "paddingStart"
    | "paddingEnd";
 
-export type ComponentPropWithRef<ComponentRef, ComponentProps> = ComponentProps & { ref?: React.Ref<ComponentRef> };
+export type ComponentPropWithRef<ComponentRef, ComponentProps> = ComponentProps & {
+   ref?: React.Ref<ComponentRef>;
+};
 export type ComponentPropWithPlugin<ComponentProps> = ComponentProps & {
    plugin: BetterComponentsPlugin;
 };

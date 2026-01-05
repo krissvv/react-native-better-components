@@ -53,7 +53,9 @@ export const useBetterComponentsContextInternal = (): BetterComponentsInternalCo
    return context;
 };
 
-export const usePlugin = <T extends object>(pluginName: PluginName): BetterComponentsPlugin<T> | undefined => {
+export const usePlugin = <T extends object>(
+   pluginName: PluginName,
+): BetterComponentsPlugin<T> | undefined => {
    const context = useContext(betterComponentsContext);
 
    if (context === undefined) {
@@ -87,7 +89,11 @@ type BetterComponentsProviderInternalProps = BetterProviderCommonProps & {
    config?: BetterComponentsProviderInternalConfig;
 };
 
-function BetterComponentsProviderInternal({ config, plugins, children }: BetterComponentsProviderInternalProps) {
+function BetterComponentsProviderInternal({
+   config,
+   plugins,
+   children,
+}: BetterComponentsProviderInternalProps) {
    const betterCoreContext = useBetterCoreContext();
 
    const [sideMenuIsCollapsed, setSideMenuIsCollapsed] = useBooleanState();
@@ -127,7 +133,8 @@ function BetterComponentsProviderInternal({ config, plugins, children }: BetterC
    );
 }
 
-export type BetterComponentsProviderConfig = BetterCoreProviderConfig & BetterComponentsProviderInternalConfig;
+export type BetterComponentsProviderConfig = BetterCoreProviderConfig &
+   BetterComponentsProviderInternalConfig;
 
 type BetterComponentsProviderProps = BetterProviderCommonProps & {
    config?: BetterComponentsProviderConfig;

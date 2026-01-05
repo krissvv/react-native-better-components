@@ -49,12 +49,17 @@ import { type AppConfig, type BetterComponentsConfig } from "./types/config";
 import { type ComponentMarginProps, type ComponentPaddingProps } from "./types/components";
 import { type PluginName, type BetterComponentsPlugin } from "./types/plugin";
 
-import { filterHover } from "./utils/variableFunctions";
+import { pressStrength } from "./utils/variableFunctions";
 
+import { useDevice } from "./utils/hooks";
 import { generateAsyncStorage } from "./utils/asyncStorage";
 
 import View, { type ViewProps } from "./components/View";
 import Text, { type TextProps } from "./components/Text";
+import Button, { type ButtonProps } from "./components/Button";
+import Loader, { type LoaderProps, type LoaderSize } from "./components/Loader";
+import Animate, { type AnimateViewProps, type AnimateTextProps } from "./components/Animate";
+import ScreenHolder, { type ScreenHolderProps, type FooterProps } from "./components/ScreenHolder";
 
 export * from "./plugins";
 
@@ -74,11 +79,12 @@ export {
    BetterComponentsPlugin,
 
    // Hooks
+   useDevice,
 
    // Functions
 
    // Variable Functions
-   filterHover,
+   pressStrength,
 
    // AsyncStorage
    generateAsyncStorage,
@@ -88,4 +94,15 @@ export {
    ViewProps,
    Text,
    TextProps,
+   Button,
+   ButtonProps,
+   Loader,
+   LoaderProps,
+   LoaderSize,
+   Animate,
+   AnimateViewProps,
+   AnimateTextProps,
+   ScreenHolder,
+   ScreenHolderProps,
+   FooterProps,
 };
