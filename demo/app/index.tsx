@@ -1,6 +1,7 @@
 import { memo, useState } from "react";
 
 import { Animate, Button, Image, InputField, ScreenHolder, Text, useTheme, View } from "../../src/index";
+import { Stack } from "expo-router";
 
 function Index() {
    const theme = useTheme();
@@ -10,7 +11,10 @@ function Index() {
    return (
       <ScreenHolder
          footer={
-            <ScreenHolder.footer insideBottomSafeArea>
+            <ScreenHolder.footer
+               insideBottomSafeArea
+               // withNoHeader
+            >
                <View gap={theme.styles.gap}>
                   <Button text="Hello" onPress={() => {}} />
                   <Button.secondary text="Hello" onPress={() => {}} />
@@ -19,9 +23,18 @@ function Index() {
                </View>
             </ScreenHolder.footer>
          }
-         bottomSpace={theme.styles.space * 2}
-         keepFooterOnKeyboardOpened
+         // bottomSpace={theme.styles.space * 2}
+         // keepFooterOnKeyboardOpened
+         // withNoHeader
       >
+         <Stack.Screen
+            options={
+               {
+                  // headerShown: false,
+               }
+            }
+         />
+
          <View gap={theme.styles.gap}>
             <View.box>
                <Text>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam, officiis.</Text>

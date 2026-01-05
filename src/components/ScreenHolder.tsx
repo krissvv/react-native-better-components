@@ -27,6 +27,8 @@ export type ScreenHolderProps = {
    /** @default false */
    keepFooterOnKeyboardOpened?: boolean;
    keyboardVerticalOffset?: number;
+   /** @default false */
+   withNoHeader?: boolean;
    children?: React.ReactNode;
 };
 
@@ -48,6 +50,7 @@ const ScreenHolderComponent: ScreenHolderComponentType = ({
    footer,
    keepFooterOnKeyboardOpened,
    keyboardVerticalOffset,
+   withNoHeader,
    children,
 }) => {
    const theme = useTheme();
@@ -96,7 +99,11 @@ const ScreenHolderComponent: ScreenHolderComponentType = ({
             style={keyboardAvoidingViewStyle}
             keyboardVerticalOffset={
                keyboardVerticalOffset ??
-               (keepFooterOnKeyboardOpened
+               (withNoHeader
+                  ? Platform.OS === "ios"
+                     ? 0
+                     : theme.styles.gap
+                  : keepFooterOnKeyboardOpened
                   ? Platform.OS === "ios"
                      ? device.safeArea.afterCalculations.bottom
                      : theme.styles.gap
@@ -120,12 +127,17 @@ const ScreenHolderComponent: ScreenHolderComponentType = ({
                )}
             </View>
 
-            {keepFooterOnKeyboardOpened ||
-            (Platform.OS === "ios" ? !keyboard.willOpen : !keyboard.isOpened) ? (
-               footer && <View>{footer}</View>
-            ) : (
-               <View width="100%" height={device.safeArea.afterCalculations.bottom}></View>
-            )}
+            {keepFooterOnKeyboardOpened || (Platform.OS === "ios" ? !keyboard.willOpen : !keyboard.isOpened)
+               ? footer && <View>{footer}</View>
+               : !withNoHeader && (
+                    <View
+                       width="100%"
+                       height={
+                          device.safeArea.afterCalculations.bottom +
+                          (Platform.OS === "android" ? theme.styles.gap : 0)
+                       }
+                    />
+                 )}
          </KeyboardAvoidingView>
       </View>
    );
@@ -138,6 +150,8 @@ export type FooterProps = {
    backgroundColor?: ViewProps["backgroundColor"];
    /** @default false */
    insideBottomSafeArea?: boolean;
+   /** @default false */
+   withNoHeader?: boolean;
    children?: React.ReactNode;
 };
 
@@ -145,17 +159,25 @@ ScreenHolderComponent.footer = function Footer({
    noSideSpace,
    backgroundColor,
    insideBottomSafeArea,
+   withNoHeader,
    children,
 }) {
    const theme = useTheme();
    const device = useDevice();
+   const keyboard = useKeyboard();
 
    return (
       <View
          backgroundColor={backgroundColor ?? theme.colors.backgroundBase}
          paddingHorizontal={!noSideSpace ? theme.styles.space : undefined}
          paddingTop={theme.styles.gap}
-         paddingBottom={insideBottomSafeArea ? device.safeArea.afterCalculations.bottom : undefined}
+         paddingBottom={
+            (Platform.OS === "ios" ? keyboard.willOpen : keyboard.isOpened) && withNoHeader
+               ? theme.styles.gap
+               : insideBottomSafeArea
+               ? device.safeArea.afterCalculations.bottom
+               : undefined
+         }
       >
          {children}
       </View>
