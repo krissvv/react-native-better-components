@@ -26,6 +26,7 @@ export type ScreenHolderProps = {
    footer?: React.ReactNode;
    /** @default false */
    keepFooterOnKeyboardOpened?: boolean;
+   keyboardVerticalOffset?: number;
    children?: React.ReactNode;
 };
 
@@ -46,6 +47,7 @@ const ScreenHolderComponent: ScreenHolderComponentType = ({
    bottomSpace = 0,
    footer,
    keepFooterOnKeyboardOpened,
+   keyboardVerticalOffset,
    children,
 }) => {
    const theme = useTheme();
@@ -93,11 +95,12 @@ const ScreenHolderComponent: ScreenHolderComponentType = ({
          <KeyboardAvoidingView
             style={keyboardAvoidingViewStyle}
             keyboardVerticalOffset={
-               keepFooterOnKeyboardOpened
+               keyboardVerticalOffset ??
+               (keepFooterOnKeyboardOpened
                   ? Platform.OS === "ios"
                      ? device.safeArea.afterCalculations.bottom
                      : theme.styles.gap
-                  : undefined
+                  : undefined)
             }
             behavior={Platform.OS === "ios" ? "padding" : "height"}
          >
