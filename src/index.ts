@@ -51,7 +51,7 @@ import { type PluginName, type BetterComponentsPlugin } from "./types/plugin";
 
 import { pressStrength } from "./utils/variableFunctions";
 
-import { useDevice } from "./utils/hooks";
+import { useDevice, useKeyboard } from "./utils/hooks";
 import { generateAsyncStorage } from "./utils/asyncStorage";
 
 import View, { type ViewProps } from "./components/View";
@@ -60,6 +60,8 @@ import Button, { type ButtonProps } from "./components/Button";
 import Loader, { type LoaderProps, type LoaderSize } from "./components/Loader";
 import Animate, { type AnimateViewProps, type AnimateTextProps } from "./components/Animate";
 import ScreenHolder, { type ScreenHolderProps, type FooterProps } from "./components/ScreenHolder";
+import Image, { type ImageProps } from "./components/Image";
+import InputField, { type InputFieldProps } from "./components/InputField";
 
 export * from "./plugins";
 
@@ -80,6 +82,7 @@ export {
 
    // Hooks
    useDevice,
+   useKeyboard,
 
    // Functions
 
@@ -105,4 +108,8 @@ export {
    ScreenHolder,
    ScreenHolderProps,
    FooterProps,
+   Image,
+   ImageProps,
+   InputField,
+   InputFieldProps,
 };

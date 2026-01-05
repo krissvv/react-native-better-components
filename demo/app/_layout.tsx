@@ -6,7 +6,14 @@ const plugins: BetterComponentsPlugin[] = [];
 
 export default function RootLayout() {
    return (
-      <BetterComponentsProvider config={{}} plugins={plugins}>
+      <BetterComponentsProvider
+         config={{
+            assets: {
+               logo: require("../assets/images/icon.png"),
+            },
+         }}
+         plugins={plugins}
+      >
          <Stack />
       </BetterComponentsProvider>
    );

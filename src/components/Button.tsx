@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { ColorValue } from "react-native";
+import { ColorValue, Platform } from "react-native";
 import { AnyOtherString, AssetName, IconName, LoaderName, useLoader, useTheme } from "react-better-core";
 
 import { pressStrength } from "../utils/variableFunctions";
@@ -99,6 +99,8 @@ const ButtonComponent = function Button<Value>({
       ? parseFloat(props.paddingHorizontal.toString())
       : theme.styles.space + theme.styles.gap;
 
+   const buttonHeight = paddingVertical + lineHeight + paddingVertical;
+
    return (
       <Animate.View
          position="relative"
@@ -121,6 +123,7 @@ const ButtonComponent = function Button<Value>({
          <View
             position="relative"
             width={!isSmall ? "100%" : undefined}
+            height={Platform.OS === "android" ? buttonHeight : undefined}
             alignItems="center"
             justifyContent="center"
             backgroundColor={theme.colors.primary}
@@ -149,7 +152,7 @@ const ButtonComponent = function Button<Value>({
             <Animate.View
                position="absolute"
                width="100%"
-               height={paddingVertical + lineHeight + paddingVertical}
+               height={buttonHeight}
                left={paddingHorizontal}
                alignItems="center"
                justifyContent="center"

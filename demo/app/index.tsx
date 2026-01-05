@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-import { Animate, Button, ScreenHolder, Text, useTheme, View } from "../../src/index";
+import { Animate, Button, Image, InputField, ScreenHolder, Text, useTheme, View } from "../../src/index";
 
 function Index() {
    const theme = useTheme();
@@ -18,12 +18,10 @@ function Index() {
             </ScreenHolder.footer>
          }
          bottomSpace={theme.styles.space * 2}
+         keepFooterOnKeyboardOpened
       >
          <View gap={theme.styles.gap}>
             <View.box>
-               <Text>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam, officiis.</Text>
-            </View.box>
-            <View.box withShadow onPress={() => {}}>
                <Text>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam, officiis.</Text>
             </View.box>
 
@@ -36,6 +34,16 @@ function Index() {
                   whileTapBackgroundColor={"blue"}
                />
             </View>
+
+            <Image name="logo" />
+            <Image.profileImage letters="Kv" />
+            <Image.profileImage name="logo" />
+
+            <InputField placeholder="Hello" />
+            <InputField.email />
+            <InputField.password />
+            <InputField placeholder="Hello" prefix="+359" />
+            <InputField placeholder="Hello" suffix="EUR" />
          </View>
       </ScreenHolder>
    );

@@ -1,8 +1,8 @@
-import { memo, useCallback } from "react";
-import { RefreshControl, ScrollView } from "react-native";
+import { memo, useCallback, useMemo } from "react";
+import { KeyboardAvoidingView, Platform, RefreshControl, ScrollView, ViewStyle } from "react-native";
 import { useBooleanState, useTheme } from "react-better-core";
 
-import { useDevice } from "../utils/hooks";
+import { useDevice, useKeyboard } from "../utils/hooks";
 
 import View, { ViewProps } from "./View";
 
@@ -24,6 +24,8 @@ export type ScreenHolderProps = {
    /** @default 0 */
    bottomSpace?: number;
    footer?: React.ReactNode;
+   /** @default false */
+   keepFooterOnKeyboardOpened?: boolean;
    children?: React.ReactNode;
 };
 
@@ -43,12 +45,21 @@ const ScreenHolderComponent: ScreenHolderComponentType = ({
    insideBottomSafeArea,
    bottomSpace = 0,
    footer,
+   keepFooterOnKeyboardOpened,
    children,
 }) => {
    const theme = useTheme();
    const device = useDevice();
+   const keyboard = useKeyboard();
 
    const [isRefreshing, setIsRefreshing] = useBooleanState();
+
+   const keyboardAvoidingViewStyle = useMemo<ViewStyle>(
+      () => ({
+         flex: 1,
+      }),
+      [],
+   );
 
    const onRefreshElement = useCallback(() => {
       setIsRefreshing.setTrue();
@@ -65,7 +76,11 @@ const ScreenHolderComponent: ScreenHolderComponentType = ({
          flex={1}
          paddingHorizontal={!noSideSpace ? theme.styles.space : undefined}
          paddingTop={theme.styles.gap + (insideTopSafeArea ? device.safeArea.afterCalculations.top : 0)}
-         paddingBottom={bottomSpace + (insideBottomSafeArea ? device.safeArea.afterCalculations.bottom : 0)}
+         paddingBottom={
+            Platform.OS === "ios" && keyboard.isOpened
+               ? device.safeArea.afterCalculations.top
+               : bottomSpace + (insideBottomSafeArea ? device.safeArea.afterCalculations.bottom : 0)
+         }
       >
          {children}
       </View>
@@ -75,23 +90,40 @@ const ScreenHolderComponent: ScreenHolderComponentType = ({
 
    return (
       <View flex={1} backgroundColor={backgroundColor ?? theme.colors.backgroundBase}>
-         <View flex={1}>
-            {noScroll ? (
-               content
-            ) : (
-               <ScrollView
-                  refreshControl={
-                     withRefresh ? (
-                        <RefreshControl refreshing={isRefreshing} onRefresh={onRefreshElement} />
-                     ) : undefined
-                  }
-               >
-                  {content}
-               </ScrollView>
-            )}
-         </View>
+         <KeyboardAvoidingView
+            style={keyboardAvoidingViewStyle}
+            keyboardVerticalOffset={
+               keepFooterOnKeyboardOpened
+                  ? Platform.OS === "ios"
+                     ? device.safeArea.afterCalculations.bottom
+                     : theme.styles.gap
+                  : undefined
+            }
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+         >
+            <View flex={1}>
+               {noScroll ? (
+                  content
+               ) : (
+                  <ScrollView
+                     refreshControl={
+                        withRefresh ? (
+                           <RefreshControl refreshing={isRefreshing} onRefresh={onRefreshElement} />
+                        ) : undefined
+                     }
+                  >
+                     {content}
+                  </ScrollView>
+               )}
+            </View>
 
-         {footer && <View>{footer}</View>}
+            {keepFooterOnKeyboardOpened ||
+            (Platform.OS === "ios" ? !keyboard.willOpen : !keyboard.isOpened) ? (
+               footer && <View>{footer}</View>
+            ) : (
+               <View width="100%" height={device.safeArea.afterCalculations.bottom}></View>
+            )}
+         </KeyboardAvoidingView>
       </View>
    );
 };

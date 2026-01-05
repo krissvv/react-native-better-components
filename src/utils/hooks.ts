@@ -1,7 +1,7 @@
-import { useMemo } from "react";
-import { Dimensions } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import { Dimensions, Keyboard, KeyboardEvent } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "react-better-core";
+import { useBooleanState, useTheme } from "react-better-core";
 
 import { animateProps, animateTransitionProps, cssProps } from "../constants/css";
 
@@ -34,6 +34,42 @@ export function useDevice() {
       windowDimensions,
       /** @description Whether the device is small. */
       isSmallDevice,
+   };
+}
+
+export function useKeyboard() {
+   const [keyboardOpened, setKeyboardOpened] = useBooleanState();
+   const [keyboardWillOpen, setKeyboardWillOpen] = useBooleanState();
+
+   const [keyboardHeight, setKeyboardHeight] = useState<number>(0);
+
+   useEffect(() => {
+      const keyboardDidShow = (event: KeyboardEvent) => {
+         setKeyboardOpened.setTrue();
+         setKeyboardHeight(event.endCoordinates.height);
+      };
+      const keyboardDidHide = () => {
+         setKeyboardOpened.setFalse();
+         setKeyboardHeight(0);
+      };
+
+      const willShowSubscription = Keyboard.addListener("keyboardWillShow", setKeyboardWillOpen.setTrue);
+      const willHideSubscription = Keyboard.addListener("keyboardWillHide", setKeyboardWillOpen.setFalse);
+      const didShowSubscription = Keyboard.addListener("keyboardDidShow", keyboardDidShow);
+      const didHideSubscription = Keyboard.addListener("keyboardDidHide", keyboardDidHide);
+
+      return () => {
+         willShowSubscription.remove();
+         willHideSubscription.remove();
+         didShowSubscription.remove();
+         didHideSubscription.remove();
+      };
+   }, []);
+
+   return {
+      isOpened: keyboardOpened,
+      willOpen: keyboardWillOpen,
+      height: keyboardHeight,
    };
 }
 
