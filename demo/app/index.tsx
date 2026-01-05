@@ -1,9 +1,11 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 
 import { Animate, Button, Image, InputField, ScreenHolder, Text, useTheme, View } from "../../src/index";
 
 function Index() {
    const theme = useTheme();
+
+   const [value, setValue] = useState<string>("");
 
    return (
       <ScreenHolder
@@ -39,7 +41,7 @@ function Index() {
             <Image.profileImage letters="Kv" />
             <Image.profileImage name="logo" />
 
-            <InputField placeholder="Hello" />
+            <InputField placeholder="Hello" value={value} onChange={setValue} />
             <InputField.email />
             <InputField.password />
             <InputField placeholder="Hello" prefix="+359" />

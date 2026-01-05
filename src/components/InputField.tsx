@@ -1,4 +1,4 @@
-import { forwardRef, memo, useCallback, useImperativeHandle, useMemo } from "react";
+import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { FocusEvent, TextInput, TextStyle } from "react-native";
 import {
    darkenColor,
@@ -19,6 +19,7 @@ export type InputFieldProps = {
    prefix?: string;
    suffix?: string;
    defaultValue?: string;
+   value?: string | number;
    /** @default true */
    editable?: boolean;
    /** @default false */
@@ -33,6 +34,7 @@ export type InputFieldProps = {
    secureTextEntry?: boolean;
    onFocus?: (event: FocusEvent) => void;
    onBlur?: (event: FocusEvent) => void;
+   onChange?: (text: string) => void;
 };
 
 export type InputFieldRef = {};
@@ -50,6 +52,7 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<InputFieldRef, I
          prefix,
          suffix,
          defaultValue,
+         value,
          editable = true,
          autoFocus,
          autoCapitalize,
@@ -60,12 +63,14 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<InputFieldRef, I
          secureTextEntry,
          onFocus,
          onBlur,
+         onChange,
       },
       ref,
    ) => {
       const theme = useTheme();
       const { colorTheme } = useBetterCoreContext();
 
+      const [internalValue, setInternalValue] = useState(value?.toString() || defaultValue || "");
       const [isFocused, setIsFocused] = useBooleanState();
 
       const paddingHorizontal = theme.styles.space;
@@ -75,11 +80,17 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<InputFieldRef, I
          setIsFocused.setTrue();
          onFocus?.(event);
       }, []);
-
       const onBlurElement = useCallback((event: FocusEvent) => {
          setIsFocused.setFalse();
          onBlur?.(event);
       }, []);
+      const onChangeText = useCallback(
+         (text: string) => {
+            setInternalValue(text);
+            onChange?.(text);
+         },
+         [onChange],
+      );
 
       const textInputStyle = useMemo<TextStyle>(
          () => ({
@@ -92,6 +103,12 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<InputFieldRef, I
          }),
          [theme.colors, paddingHorizontal, paddingVertical],
       );
+
+      useEffect(() => {
+         if (value === undefined) return;
+
+         setInternalValue(value.toString());
+      }, [value]);
 
       useImperativeHandle(
          ref,
@@ -139,6 +156,7 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<InputFieldRef, I
             >
                <TextInput
                   style={textInputStyle}
+                  value={internalValue}
                   defaultValue={defaultValue}
                   autoCapitalize={autoCapitalize}
                   autoComplete={autoComplete}
@@ -154,6 +172,7 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<InputFieldRef, I
                   secureTextEntry={secureTextEntry}
                   onFocus={onFocusElement}
                   onBlur={onBlurElement}
+                  onChangeText={onChangeText}
                />
             </Animate.View>
 
