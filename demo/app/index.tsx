@@ -61,10 +61,22 @@ function Index() {
                <InputField.code />
             </View>
 
-            <InputField placeholder="Hello" value={value} onChange={setValue} />
+            <InputField
+               label="Hello"
+               placeholder="Hello"
+               errorMessage="lorem inpiusn auydev qduy vdajywvd ja"
+               isError
+               value={value}
+               onChange={setValue}
+            />
             <InputField.email />
             <InputField.password />
-            <InputField placeholder="Hello" prefix="+359" />
+            <InputField
+               label="Just that"
+               infoMessage="lorem inpiusn auydev ajwdv ad"
+               placeholder="Hello"
+               prefix="+359"
+            />
             <InputField placeholder="Hello" suffix="EUR" />
          </View>
       </ScreenHolder>
