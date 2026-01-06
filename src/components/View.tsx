@@ -14,6 +14,7 @@ import { OmitProps, useTheme } from "react-better-core";
 import { ComponentStyle } from "../types/components";
 
 const touchableHighlightStyleMoveToContent: (keyof ComponentStyle)[] = [
+   "width",
    "backgroundColor",
    "padding",
    "paddingTop",
@@ -210,6 +211,7 @@ const ViewComponent: ViewComponentType = function View<Value>({
             >
                <ViewComponent
                   width="100%"
+                  height={props.height}
                   borderRadius={props.borderRadius}
                   borderTopLeftRadius={props.borderTopLeftRadius}
                   borderTopRightRadius={props.borderTopRightRadius}

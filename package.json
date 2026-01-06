@@ -44,12 +44,13 @@
       "typescript": "^5.5.3"
    },
    "peerDependencies": {
+      "@legendapp/motion": "^2.5.3",
       "@react-native-async-storage/async-storage": "^2.2.0",
       "crypto-js": "^4.2.0",
       "react": "^19.1.0",
       "react-better-core": "^1.0.8",
       "react-native": "^0.81.5",
       "react-native-safe-area-context": "^5.6.2",
-      "@legendapp/motion": "^2.5.3"
+      "@react-native-community/datetimepicker": "^8.5.1"
    }
 }

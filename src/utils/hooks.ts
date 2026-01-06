@@ -211,6 +211,7 @@ export function useForm<
             required: requiredFields?.includes(field),
             value: values[field]?.toString() ?? "",
             errorMessage: errors[field],
+            isError: !!errors[field],
             returnKeyLabel: isLastInputField ? additional?.lastInputFieldReturnKeyLabel ?? "done" : "next",
             onPressEnter: () => {
                if (isLastInputField) onSubmitFunction();

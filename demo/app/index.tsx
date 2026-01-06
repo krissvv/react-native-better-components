@@ -45,6 +45,7 @@ function Index() {
                </View>
             </ScreenHolder.footer>
          }
+         // insideBottomSafeArea
          // bottomSpace={theme.styles.space * 2}
          // keepFooterOnKeyboardOpened
          // withNoHeader
@@ -84,6 +85,12 @@ function Index() {
             </View>
 
             <InputField
+               label="Editable NOT"
+               editable={false}
+               onPress={() => console.log(new Date().toString())}
+            />
+
+            <InputField
                label="Hello"
                placeholder="Hello"
                errorMessage="lorem inpiusn auydev qduy vdajywvd ja"
@@ -98,8 +105,19 @@ function Index() {
                infoMessage="lorem inpiusn auydev ajwdv ad"
                placeholder="Hello"
                prefix="+359"
+               onPressPrefix={() => console.log(new Date().toString())}
             />
-            <InputField placeholder="Hello" suffix="EUR" />
+            <InputField
+               placeholder="Hello"
+               suffix="EUR"
+               onPressSuffix={() => console.log(new Date().toString())}
+            />
+
+            <InputField type="date" label="Date" />
+            <InputField type="time" label="Time" />
+
+            <InputField type="date" label="Date" iOSDateTimeFullSize />
+            <InputField type="time" label="Time" iOSDateTimeFullSize />
 
             <InputField label="First" placeholder="First" {...form.getInputFieldProps("first")} />
             <InputField label="Second" placeholder="Second" {...form.getInputFieldProps("second")} />

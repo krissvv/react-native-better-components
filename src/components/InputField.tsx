@@ -12,10 +12,16 @@ import {
    FocusEvent,
    NativeSyntheticEvent,
    NativeTouchEvent,
+   Platform,
    TextInput,
    TextInputSubmitEditingEvent,
    TextStyle,
+   ViewStyle,
 } from "react-native";
+import RNDateTimePicker, {
+   DateTimePickerAndroid,
+   DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import {
    darkenColor,
    lightenColor,
@@ -32,6 +38,10 @@ import Animate from "./Animate";
 
 export type InputFieldProps = {
    placeholder?: string;
+   /** @default "text" */
+   type?: "text" | "date" | "time";
+   /** @default false */
+   iOSDateTimeFullSize?: boolean;
    prefix?: string | React.ReactNode;
    suffix?: string | React.ReactNode;
    defaultValue?: string;
@@ -66,10 +76,17 @@ export type InputFieldProps = {
    required?: boolean;
    /** @default false */
    disabled?: boolean;
+   maxLength?: number;
+   /** @default false */
+   multiline?: boolean;
+   /** @default 2 */
+   numberOfLines?: number;
    onFocus?: (event: FocusEvent) => void;
    onBlur?: (event: FocusEvent) => void;
    onChange?: (text: string) => void;
    onPress?: (event: NativeSyntheticEvent<NativeTouchEvent>) => void;
+   onPressPrefix?: (event: NativeSyntheticEvent<NativeTouchEvent>) => void;
+   onPressSuffix?: (event: NativeSyntheticEvent<NativeTouchEvent>) => void;
    onPressEnter?: (event: TextInputSubmitEditingEvent) => void;
 } & Pick<ComponentPaddingProps, "paddingHorizontal" | "paddingVertical">;
 
@@ -94,6 +111,8 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
    (
       {
          placeholder,
+         type = "text",
+         iOSDateTimeFullSize,
          prefix,
          suffix,
          defaultValue,
@@ -119,12 +138,17 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
          textAlign,
          required,
          disabled,
+         maxLength,
+         multiline,
+         numberOfLines = 2,
          paddingHorizontal,
          paddingVertical,
          onFocus,
          onBlur,
          onChange,
          onPress,
+         onPressPrefix,
+         onPressSuffix,
          onPressEnter,
       },
       ref,
@@ -135,7 +159,10 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
       const textInputRef = useRef<TextInput>(null);
 
       const [internalValue, setInternalValue] = useState(value?.toString() || defaultValue || "");
+      const [internalDateValue, setInternalDateValue] = useState<Date>();
       const [isFocused, setIsFocused] = useBooleanState();
+
+      const isIOSDateTime = Platform.OS === "ios" && (type === "date" || type === "time");
 
       const borderWidth = 1;
       const readyPaddingHorizontal = paddingHorizontal ?? theme.styles.space;
@@ -143,8 +170,51 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
          ? parseFloat(paddingVertical.toString())
          : (theme.styles.space + theme.styles.gap) / 2;
       const readyHeight =
-         height ?? borderWidth + readyPaddingVertical + lineHeight + readyPaddingVertical + borderWidth;
+         height ?? isIOSDateTime
+            ? undefined
+            : borderWidth +
+              readyPaddingVertical +
+              lineHeight +
+              readyPaddingVertical +
+              borderWidth +
+              (Platform.OS === "android" ? 2 : 0);
 
+      const onChangeRNDateTimePicker = useCallback(
+         (event: DateTimePickerEvent, data?: Date) => {
+            setInternalDateValue(data);
+            onChange?.(data?.toISOString() ?? "");
+         },
+         [onChange],
+      );
+      const onPressInputField = useCallback(
+         (event: NativeSyntheticEvent<NativeTouchEvent>) => {
+            onPress?.(event);
+
+            if (type === "date" || type === "time") {
+               if (Platform.OS === "android") {
+                  DateTimePickerAndroid.open({
+                     value: internalDateValue ?? new Date(),
+                     is24Hour: true,
+                     mode: type,
+                     positiveButton: {
+                        label: "Done",
+                     },
+                     negativeButton: {
+                        label: "Clear",
+                        textColor: theme.colors.textSecondary,
+                     },
+                     neutralButton: {
+                        label: "Cancel",
+                        textColor: theme.colors.textSecondary,
+                     },
+                     onChange: onChangeRNDateTimePicker,
+                  });
+               } else if (Platform.OS === "ios") {
+               }
+            }
+         },
+         [onPress, type, internalDateValue, onChangeRNDateTimePicker],
+      );
       const onFocusElement = useCallback((event: FocusEvent) => {
          setIsFocused.setTrue();
          onFocus?.(event);
@@ -173,12 +243,38 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
          }),
          [theme.colors, fontSize, fontWeight, lineHeight, readyPaddingHorizontal, readyPaddingVertical],
       );
+      const rnDateTimePickerStyle = useMemo<ViewStyle>(
+         () => ({
+            flex: iOSDateTimeFullSize ? 1 : undefined,
+            marginLeft: -8 + (iOSDateTimeFullSize ? 0 : theme.styles.space),
+         }),
+         [iOSDateTimeFullSize],
+      );
 
       useEffect(() => {
          if (value === undefined) return;
 
          setInternalValue(value.toString());
+         setInternalDateValue(new Date(value));
       }, [value]);
+      useEffect(() => {
+         if (type !== "date" && type !== "time") return;
+
+         const date = internalDateValue?.toISOString().split("T")[0] ?? "";
+
+         const hours = internalDateValue ? internalDateValue.getHours().toString() : "00";
+         const minutes = internalDateValue ? internalDateValue.getMinutes().toString() : "00";
+
+         setInternalValue(
+            type === "date"
+               ? date
+               : internalDateValue
+               ? `${hours.length === 1 ? `0${hours}` : hours}:${
+                    minutes.length === 1 ? `0${minutes}` : minutes
+                 }`
+               : "",
+         );
+      }, [internalDateValue]);
 
       useImperativeHandle(
          ref,
@@ -188,10 +284,21 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
          [],
       );
 
+      const withPressInputField = !!onPress || type === "date" || type === "time";
       const prefixSuffixBackgroundColor =
          colorTheme === "light"
             ? darkenColor(theme.colors.backgroundContent, 0.03)
             : lightenColor(theme.colors.backgroundContent, 0.1);
+
+      const labelComponent = label && (
+         <View isRow alignItems="center" gap={2}>
+            <Text fontSize={14} color={isError ? theme.colors.error : theme.colors.textSecondary}>
+               {label}
+            </Text>
+
+            {required && <Text color={theme.colors.error}>*</Text>}
+         </View>
+      );
 
       return (
          <Animate.View
@@ -200,15 +307,7 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
             initialOpacity={1}
             animateOpacity={disabled ? 0.6 : 1}
          >
-            {label && (
-               <View isRow width="100%" alignItems="center" gap={2}>
-                  <Text fontSize={14} color={theme.colors.textSecondary}>
-                     {label}
-                  </Text>
-
-                  {required && <Text color={theme.colors.error}>*</Text>}
-               </View>
-            )}
+            {isIOSDateTime && !iOSDateTimeFullSize ? undefined : labelComponent}
 
             <View isRow position="relative" alignItems="center" flex={1} height={readyHeight}>
                {prefix && (
@@ -217,59 +316,110 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
                      height="100%"
                      backgroundColor={prefixSuffixBackgroundColor}
                      alignItems="center"
+                     justifyContent="center"
                      borderWidth={borderWidth}
                      borderRightWidth={0}
                      borderTopLeftRadius={theme.styles.borderRadius}
                      borderBottomLeftRadius={theme.styles.borderRadius}
                      borderColor={theme.colors.border}
                      paddingHorizontal={readyPaddingHorizontal}
+                     onPress={onPressPrefix}
                   >
-                     {typeof prefix === "string" ? <Text fontWeight={700}>{prefix}</Text> : prefix}
+                     {typeof prefix === "string" ? (
+                        <Text
+                           fontWeight={700}
+                           lineHeight={lineHeight}
+                           marginTop={Platform.OS === "ios" ? readyPaddingVertical : undefined}
+                        >
+                           {prefix}
+                        </Text>
+                     ) : (
+                        prefix
+                     )}
                   </View>
                )}
 
-               <Animate.View
-                  flex={1}
-                  backgroundColor={theme.colors.backgroundContent}
-                  borderTopLeftRadius={prefix ? 0 : theme.styles.borderRadius}
-                  borderBottomLeftRadius={prefix ? 0 : theme.styles.borderRadius}
-                  borderTopRightRadius={suffix ? 0 : theme.styles.borderRadius}
-                  borderBottomRightRadius={suffix ? 0 : theme.styles.borderRadius}
-                  borderWidth={borderWidth}
-                  initialBorderColor={theme.colors.border}
-                  animateBorderColor={
-                     isFocused ? theme.colors.primary : isError ? theme.colors.error : theme.colors.border
-                  }
-                  overflow="hidden"
-               >
-                  <TextInput
-                     style={textInputStyle}
-                     value={internalValue}
-                     defaultValue={defaultValue}
-                     autoCapitalize={autoCapitalize}
-                     autoComplete={autoComplete}
-                     autoCorrect={autoCorrect}
-                     autoFocus={autoFocus}
-                     placeholder={placeholder}
-                     placeholderTextColor={theme.colors.textSecondary + "80"}
-                     enterKeyHint={returnKeyLabel}
-                     returnKeyType={returnKeyType}
-                     onSubmitEditing={onPressEnter}
-                     readOnly={!editable || disabled}
-                     textAlign={textAlign}
-                     editable={!disabled}
-                     keyboardAppearance={keyboardAppearance}
-                     keyboardType={keyboardType}
-                     cursorColor={theme.colors.primary}
-                     selectionColor={theme.colors.primary}
-                     secureTextEntry={secureTextEntry}
-                     onFocus={onFocusElement}
-                     onBlur={onBlurElement}
-                     onChangeText={onChangeText}
-                     onPress={onPress}
-                     ref={textInputRef}
-                  />
-               </Animate.View>
+               {isIOSDateTime ? (
+                  <>
+                     {!iOSDateTimeFullSize ? labelComponent : undefined}
+
+                     <RNDateTimePicker
+                        value={internalDateValue ?? new Date()}
+                        mode={type}
+                        display={iOSDateTimeFullSize ? (type === "date" ? "inline" : "spinner") : "default"}
+                        accentColor={theme.colors.primary}
+                        style={rnDateTimePickerStyle}
+                        onChange={onChangeRNDateTimePicker}
+                     />
+                  </>
+               ) : (
+                  <View
+                     flex={1}
+                     width="100%"
+                     borderTopLeftRadius={prefix ? 0 : theme.styles.borderRadius}
+                     borderBottomLeftRadius={prefix ? 0 : theme.styles.borderRadius}
+                     borderTopRightRadius={suffix ? 0 : theme.styles.borderRadius}
+                     borderBottomRightRadius={suffix ? 0 : theme.styles.borderRadius}
+                     pressStrength={1}
+                     onPress={
+                        Platform.OS === "android"
+                           ? editable === false || withPressInputField
+                              ? onPressInputField
+                              : undefined
+                           : undefined
+                     }
+                  >
+                     <Animate.View
+                        flex={1}
+                        backgroundColor={theme.colors.backgroundContent}
+                        borderTopLeftRadius={prefix ? 0 : theme.styles.borderRadius}
+                        borderBottomLeftRadius={prefix ? 0 : theme.styles.borderRadius}
+                        borderTopRightRadius={suffix ? 0 : theme.styles.borderRadius}
+                        borderBottomRightRadius={suffix ? 0 : theme.styles.borderRadius}
+                        borderWidth={borderWidth}
+                        initialBorderColor={theme.colors.border}
+                        animateBorderColor={
+                           isFocused
+                              ? theme.colors.primary
+                              : isError
+                              ? theme.colors.error
+                              : theme.colors.border
+                        }
+                        overflow="hidden"
+                     >
+                        <TextInput
+                           style={textInputStyle}
+                           value={internalValue}
+                           defaultValue={defaultValue}
+                           autoCapitalize={autoCapitalize}
+                           autoComplete={autoComplete}
+                           autoCorrect={autoCorrect}
+                           autoFocus={autoFocus}
+                           placeholder={placeholder ?? label}
+                           placeholderTextColor={theme.colors.textSecondary + "80"}
+                           enterKeyHint={returnKeyLabel}
+                           returnKeyType={returnKeyType}
+                           onSubmitEditing={onPressEnter}
+                           readOnly={!editable || disabled || type === "date" || type === "time"}
+                           textAlign={textAlign}
+                           editable={!disabled}
+                           keyboardAppearance={keyboardAppearance}
+                           keyboardType={keyboardType}
+                           cursorColor={theme.colors.primary}
+                           selectionColor={theme.colors.primary}
+                           secureTextEntry={secureTextEntry}
+                           onFocus={onFocusElement}
+                           onBlur={onBlurElement}
+                           onChangeText={onChangeText}
+                           maxLength={maxLength}
+                           multiline={multiline}
+                           numberOfLines={numberOfLines}
+                           onPress={withPressInputField ? onPressInputField : undefined}
+                           ref={textInputRef}
+                        />
+                     </Animate.View>
+                  </View>
+               )}
 
                {suffix && (
                   <View
@@ -283,8 +433,19 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
                      borderBottomRightRadius={theme.styles.borderRadius}
                      borderColor={theme.colors.border}
                      paddingHorizontal={readyPaddingHorizontal}
+                     onPress={onPressSuffix}
                   >
-                     {typeof suffix === "string" ? <Text fontWeight={700}>{suffix}</Text> : suffix}
+                     {typeof suffix === "string" ? (
+                        <Text
+                           fontWeight={700}
+                           lineHeight={lineHeight}
+                           marginTop={Platform.OS === "ios" ? readyPaddingVertical : undefined}
+                        >
+                           {suffix}
+                        </Text>
+                     ) : (
+                        suffix
+                     )}
                   </View>
                )}
             </View>
