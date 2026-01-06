@@ -255,7 +255,10 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
          if (value === undefined) return;
 
          setInternalValue(value.toString());
-         setInternalDateValue(new Date(value));
+
+         try {
+            setInternalDateValue(value ? new Date(value) : undefined);
+         } catch (error) {}
       }, [value]);
       useEffect(() => {
          if (type !== "date" && type !== "time") return;
@@ -329,7 +332,9 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
                         <Text
                            fontWeight={700}
                            lineHeight={lineHeight}
-                           marginTop={Platform.OS === "ios" ? readyPaddingVertical : undefined}
+                           marginTop={
+                              Platform.OS === "ios" && onPressPrefix ? readyPaddingVertical : undefined
+                           }
                         >
                            {prefix}
                         </Text>
@@ -439,7 +444,9 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
                         <Text
                            fontWeight={700}
                            lineHeight={lineHeight}
-                           marginTop={Platform.OS === "ios" ? readyPaddingVertical : undefined}
+                           marginTop={
+                              Platform.OS === "ios" && onPressSuffix ? readyPaddingVertical : undefined
+                           }
                         >
                            {suffix}
                         </Text>

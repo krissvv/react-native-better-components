@@ -23,6 +23,7 @@ function Index() {
          first: "",
          second: "",
          third: "",
+         date: "",
       },
       requiredFields: ["first"],
       onSubmit: (values) => {
@@ -105,7 +106,7 @@ function Index() {
                infoMessage="lorem inpiusn auydev ajwdv ad"
                placeholder="Hello"
                prefix="+359"
-               onPressPrefix={() => console.log(new Date().toString())}
+               // onPressPrefix={() => console.log(new Date().toString())}
             />
             <InputField
                placeholder="Hello"
@@ -113,7 +114,7 @@ function Index() {
                onPressSuffix={() => console.log(new Date().toString())}
             />
 
-            <InputField type="date" label="Date" />
+            <InputField type="date" label="Date" {...form.getInputFieldProps("date")} />
             <InputField type="time" label="Time" />
 
             <InputField type="date" label="Date" iOSDateTimeFullSize />
