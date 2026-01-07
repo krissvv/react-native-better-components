@@ -30,13 +30,14 @@ import {
    useTheme,
 } from "react-better-core";
 
-import { ComponentPaddingProps, ComponentPropWithRef } from "../types/components";
+import { ComponentMarginProps, ComponentPaddingProps, ComponentPropWithRef } from "../types/components";
 
 import View from "./View";
 import Text from "./Text";
 import Animate from "./Animate";
 
 export type InputFieldProps = {
+   flex?: ViewStyle["flex"];
    placeholder?: string;
    /** @default "text" */
    type?: "text" | "date" | "time";
@@ -88,7 +89,8 @@ export type InputFieldProps = {
    onPressPrefix?: (event: NativeSyntheticEvent<NativeTouchEvent>) => void;
    onPressSuffix?: (event: NativeSyntheticEvent<NativeTouchEvent>) => void;
    onPressEnter?: (event: TextInputSubmitEditingEvent) => void;
-} & Pick<ComponentPaddingProps, "paddingHorizontal" | "paddingVertical">;
+} & Pick<ComponentPaddingProps, "paddingHorizontal" | "paddingVertical"> &
+   ComponentMarginProps;
 
 export type InputFieldRef = TextInput;
 
@@ -110,6 +112,7 @@ type InputFieldComponentType = {
 const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, InputFieldProps>(
    (
       {
+         flex,
          placeholder,
          type = "text",
          iOSDateTimeFullSize,
@@ -150,6 +153,7 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
          onPressPrefix,
          onPressSuffix,
          onPressEnter,
+         ...props
       },
       ref,
    ) => {
@@ -305,14 +309,15 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
 
       return (
          <Animate.View
-            flex={1}
+            flex={flex}
             gap={theme.styles.gap / 3}
             initialOpacity={1}
             animateOpacity={disabled ? 0.6 : 1}
+            {...props}
          >
             {isIOSDateTime && !iOSDateTimeFullSize ? undefined : labelComponent}
 
-            <View isRow position="relative" alignItems="center" flex={1} height={readyHeight}>
+            <View isRow position="relative" alignItems="center" height={readyHeight}>
                {prefix && (
                   <View
                      isRow
@@ -519,6 +524,7 @@ InputFieldComponent.code = forwardRef(function Password({ isSmall, ...props }, r
 
    return (
       <InputFieldComponent
+         flex={1}
          fontSize={isSmall ? 36 : 42}
          fontWeight={900}
          lineHeight={isSmall ? 42 : 50}

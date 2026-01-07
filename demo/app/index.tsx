@@ -50,6 +50,7 @@ function Index() {
          // bottomSpace={theme.styles.space * 2}
          // keepFooterOnKeyboardOpened
          // withNoHeader
+         // noScroll
       >
          <Stack.Screen
             options={
