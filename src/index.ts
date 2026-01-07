@@ -51,7 +51,7 @@ import { type PluginName, type BetterComponentsPlugin } from "./types/plugin";
 
 import { pressStrength } from "./utils/variableFunctions";
 
-import { useDevice, useKeyboard, useForm } from "./utils/hooks";
+import { useDevice, useKeyboard, useForm, useEventEmitter } from "./utils/hooks";
 import { getFormErrorObject } from "./utils/functions";
 import { generateAsyncStorage } from "./utils/asyncStorage";
 
@@ -87,6 +87,7 @@ export {
    useDevice,
    useKeyboard,
    useForm,
+   useEventEmitter,
 
    // Functions
    getFormErrorObject,

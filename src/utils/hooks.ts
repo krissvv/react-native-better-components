@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Dimensions, Keyboard, KeyboardEvent, TextInput } from "react-native";
+import { DeviceEventEmitter, Dimensions, Keyboard, KeyboardEvent, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PartialRecord, useBooleanState, useTheme } from "react-better-core";
 
@@ -266,5 +266,16 @@ export function useForm<
       isDirty,
       isValid,
       canSubmit,
+   };
+}
+
+export function useEventEmitter() {
+   return {
+      emit: <Params>(eventName: string, params?: Params) => {
+         DeviceEventEmitter.emit(eventName, params);
+      },
+      listen: <Params>(eventName: string, callback: (params?: Params) => void = () => {}) => {
+         return DeviceEventEmitter.addListener(eventName, callback);
+      },
    };
 }

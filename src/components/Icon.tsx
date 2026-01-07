@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 import { Platform } from "react-native";
 import { Path, Svg } from "react-native-svg";
 import { AnyOtherString, IconName, OmitProps, useBetterCoreContext, useTheme } from "react-better-core";
@@ -30,7 +30,23 @@ function Icon({ name, nameIOS, size = 16, color, ...props }: IconProps) {
    }, [icons, name]);
 
    return (
-      <View width={size} height={size} pressType="opacity" pressStrength={pressStrength().p2} {...props}>
+      <View
+         width={
+            size +
+            (parseFloat(props.padding?.toString() ?? "0") ?? 0) +
+            (parseFloat(props.paddingHorizontal?.toString() ?? "0") ?? 0)
+         }
+         height={
+            size +
+            (parseFloat(props.padding?.toString() ?? "0") ?? 0) +
+            (parseFloat(props.paddingVertical?.toString() ?? "0") ?? 0)
+         }
+         alignItems="center"
+         justifyContent="center"
+         pressType="opacity"
+         pressStrength={pressStrength().p2}
+         {...props}
+      >
          {Platform.OS === "ios" && nameIOS ? (
             <SymbolView name={nameIOS} tintColor={svgColor} size={size} />
          ) : (
@@ -54,4 +70,4 @@ function Icon({ name, nameIOS, size = 16, color, ...props }: IconProps) {
    );
 }
 
-export default Icon;
+export default memo(Icon);

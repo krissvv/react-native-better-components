@@ -1,6 +1,7 @@
 import { memo, useEffect, useMemo } from "react";
 import { AnyOtherString, AssetName, OmitProps, useBetterCoreContext, useTheme } from "react-better-core";
 import {
+   ColorValue,
    ImageSourcePropType,
    Image as NativeImage,
    ImageProps as NativeImageProps,
@@ -26,7 +27,8 @@ type ImageComponentType = {
          /** @default 50 */
          size?: number;
          letters?: string;
-         backgroundColor?: string;
+         color?: ColorValue;
+         backgroundColor?: ColorValue;
       },
    ) => React.ReactElement;
 };
@@ -61,7 +63,13 @@ const ImageComponent: ImageComponentType = function Image({ name, source, withDe
    return <NativeImage source={name ? (assets[name.toString()] as any) : source} style={style} {...props} />;
 };
 
-ImageComponent.profileImage = function ProfileImage({ size = 50, letters, backgroundColor, ...props }) {
+ImageComponent.profileImage = function ProfileImage({
+   size = 50,
+   letters,
+   color,
+   backgroundColor,
+   ...props
+}) {
    const theme = useTheme();
 
    return letters ? (
@@ -76,7 +84,7 @@ ImageComponent.profileImage = function ProfileImage({ size = 50, letters, backgr
          justifyContent="center"
          {...props}
       >
-         <Text fontSize={size / 2.5} fontWeight={700} marginTop={1}>
+         <Text fontSize={size / 2.5} fontWeight={700} color={color ?? theme.colors.textPrimary} marginTop={1}>
             {letters.toUpperCase().slice(0, 2)}
          </Text>
       </View>

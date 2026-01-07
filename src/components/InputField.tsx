@@ -85,8 +85,10 @@ export type InputFieldProps = {
    numberOfLines?: number;
    leftIcon?: IconProps["name"];
    leftIconIOS?: IconProps["nameIOS"];
+   onPressLeftIcon?: (event: NativeSyntheticEvent<NativeTouchEvent>) => void;
    rightIcon?: IconProps["name"];
    rightIconIOS?: IconProps["nameIOS"];
+   onPressRightIcon?: (event: NativeSyntheticEvent<NativeTouchEvent>) => void;
    onFocus?: (event: FocusEvent) => void;
    onBlur?: (event: FocusEvent) => void;
    onChange?: (text: string) => void;
@@ -152,8 +154,10 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
          numberOfLines = 2,
          leftIcon,
          leftIconIOS,
+         onPressLeftIcon,
          rightIcon,
          rightIconIOS,
+         onPressRightIcon,
          paddingHorizontal,
          paddingVertical,
          onFocus,
@@ -179,6 +183,7 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
       const isIOSDateTime = Platform.OS === "ios" && (type === "date" || type === "time");
 
       const iconSize = 16;
+      const iconPadding = onPressRightIcon ? theme.styles.gap : 0;
       const iconSideSpace = theme.styles.space;
       const borderWidth = 1;
       const readyPaddingHorizontal = paddingHorizontal ?? theme.styles.space;
@@ -427,11 +432,13 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
                         {leftIcon && (
                            <Icon
                               position="absolute"
-                              left={iconSideSpace}
+                              left={iconSideSpace - iconPadding}
                               name={leftIcon}
                               nameIOS={leftIconIOS}
                               size={iconSize}
-                              pointerEvents="box-none"
+                              pointerEvents={!onPressLeftIcon ? "box-none" : undefined}
+                              padding={iconPadding}
+                              onPress={onPressLeftIcon}
                            />
                         )}
 
@@ -469,11 +476,13 @@ const InputFieldComponent: InputFieldComponentType = forwardRef<TextInput, Input
                         {rightIcon && (
                            <Icon
                               position="absolute"
-                              right={iconSideSpace}
+                              right={iconSideSpace - iconPadding}
                               name={rightIcon}
                               nameIOS={rightIconIOS}
                               size={iconSize}
-                              pointerEvents="box-none"
+                              pointerEvents={!onPressRightIcon ? "box-none" : undefined}
+                              padding={iconPadding}
+                              onPress={onPressRightIcon}
                            />
                         )}
                      </Animate.View>
@@ -555,15 +564,34 @@ InputFieldComponent.email = forwardRef(function Email(props, ref) {
 }) as InputFieldComponentType[`email`];
 
 InputFieldComponent.password = forwardRef(function Password(props, ref) {
+   const inputFieldRef = useRef<InputFieldRef>(null);
+
+   const [showPassword, setShowPassword] = useBooleanState();
+
+   const onPressEye = useCallback(() => {
+      setShowPassword.toggle();
+      inputFieldRef.current?.focus();
+   }, []);
+
+   useImperativeHandle(
+      ref,
+      (): TextInput => {
+         return inputFieldRef.current!;
+      },
+      [],
+   );
+
    return (
       <InputFieldComponent
-         secureTextEntry
+         secureTextEntry={!showPassword}
          placeholder="******"
          autoCapitalize="none"
          autoComplete="password"
          autoCorrect={false}
+         rightIcon={showPassword ? "eyeDashed" : "eye"}
+         onPressRightIcon={onPressEye}
          {...props}
-         ref={ref}
+         ref={inputFieldRef}
       />
    );
 }) as InputFieldComponentType[`password`];
