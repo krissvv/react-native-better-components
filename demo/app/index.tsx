@@ -127,7 +127,7 @@ function Index() {
                   onPress={() =>
                      alertControls.createAlert({
                         type: "warning",
-                        message: "This is an warning alert",
+                        message: "This is an warning alert awd awdawd awdawd awdawd awdawdawd awdawd",
                      })
                   }
                />

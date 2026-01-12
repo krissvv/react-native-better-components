@@ -7,6 +7,8 @@ import { AlertsPluginOptions, defaultAlertsPluginOptions } from "../../plugins";
 
 import { AlertDisplay, AlertDuration, Alert as AlertT, AlertType } from "../../types/alert";
 
+import { useDevice } from "../../utils/hooks";
+
 import View from "../View";
 import Text from "../Text";
 import Icon, { IconNameIOS } from "../Icon";
@@ -39,6 +41,7 @@ type AlertProps = {
 
 function Alert({ alert }: AlertProps) {
    const theme = useTheme();
+   const device = useDevice();
    const alertControls = useAlertControls();
    const alertsPlugin = usePlugin<AlertsPluginOptions>("alerts");
 
@@ -106,10 +109,14 @@ function Alert({ alert }: AlertProps) {
       };
    }, [onPressCloseAlert, defaultAlertDurationNumber]);
 
+   const iconSize = 16;
+   const iconPadding = (theme.styles.space + theme.styles.gap) / 2;
+
    return defaultAlertDisplay === "prominent" ? (
       <></>
    ) : (
       <Animate.View
+         maxWidth="100%"
          initialOpacity={0}
          animateOpacity={isRemoved ? 0 : 1}
          initialX={40}
@@ -122,15 +129,30 @@ function Alert({ alert }: AlertProps) {
                   justifyContent="center"
                   backgroundColor={alertData[alert.type].backgroundColor}
                   borderRadius={999}
-                  padding={(theme.styles.space + theme.styles.gap) / 2}
+                  padding={iconPadding}
                >
                   <Icon
                      name={alertData[alert.type].icon}
+                     nameIOS={alertData[alert.type].iconIOS}
+                     size={iconSize}
                      color={alertData[alert.type].iconColor ?? theme.colors.base}
                   />
                </View>
 
-               <View>
+               <View
+                  maxWidth={
+                     device.windowDimensions.width -
+                     theme.styles.space -
+                     theme.styles.space -
+                     (iconPadding + iconSize + iconPadding) -
+                     theme.styles.space -
+                     60 -
+                     theme.styles.space -
+                     theme.styles.space -
+                     theme.styles.space
+                  }
+                  gap={theme.styles.gap / 3}
+               >
                   <Text fontSize={18} fontWeight={700}>
                      {alert.title ?? alertData[alert.type].title}
                   </Text>
